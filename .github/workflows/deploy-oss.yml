@@ -32,6 +32,11 @@ jobs:
             --exclude "*.md" \
             --exclude "*.json*" \
             --exclude ".*" \
+            --exclude ".git" \
+            --exclude ".git/*" \
+            --exclude ".github" \
+            --exclude ".github/*" \
             --exclude "ossutil-2.2.1-linux-amd64.zip" \
             --exclude "ossutil" \
+            --exclude "ossutil-2.2.1-linux-amd64" \
             --exclude "ossutil-2.2.1-linux-amd64/*"
