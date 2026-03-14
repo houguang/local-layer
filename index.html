@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Layer | 一次翻译，永久使用</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f5f7;
+        --card: rgba(255, 255, 255, 0.82);
+        --text: #1d1d1f;
+        --muted: #6e6e73;
+        --line: rgba(0, 0, 0, 0.08);
+        --accent: #0071e3;
+        --accent-soft: rgba(0, 113, 227, 0.12);
+        --topbar-bg: rgba(245, 245, 247, 0.72);
+        --hero-chip-bg: #ffffff;
+        --hero-chip-text: #3c3c43;
+        --btn-ghost-bg: #ffffff;
+        --btn-ghost-hover: #fafcff;
+        --radius: 24px;
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #0b0b0f;
+        --card: rgba(25, 25, 32, 0.76);
+        --text: #f5f5f7;
+        --muted: #a1a1aa;
+        --line: rgba(255, 255, 255, 0.14);
+        --accent: #2997ff;
+        --accent-soft: rgba(41, 151, 255, 0.2);
+        --topbar-bg: rgba(11, 11, 15, 0.74);
+        --hero-chip-bg: rgba(255, 255, 255, 0.06);
+        --hero-chip-text: #e4e4e7;
+        --btn-ghost-bg: rgba(255, 255, 255, 0.04);
+        --btn-ghost-hover: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        font-family: "SF Pro Display", "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at 10% -20%, #dce8ff 0, var(--bg) 35%, var(--bg) 100%);
+      }
+
+      :root[data-theme="dark"] html,
+      :root[data-theme="dark"] body {
+        background: radial-gradient(circle at 10% -20%, #13203c 0, var(--bg) 35%, var(--bg) 100%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .container {
+        width: min(1200px, 92vw);
+        margin: 0 auto;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(14px);
+        background: var(--topbar-bg);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .topbar-inner {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+
+      .brand img {
+        width: 30px;
+        height: 30px;
+      }
+
+      .nav-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .theme-toggle {
+        border: 1px solid var(--line);
+        background: var(--btn-ghost-bg);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .theme-toggle:hover {
+        background: var(--btn-ghost-hover);
+      }
+
+      .hero {
+        padding: 96px 0 72px;
+        text-align: center;
+      }
+
+      .hero-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--line);
+        background: var(--hero-chip-bg);
+        color: var(--hero-chip-text);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 13px;
+      }
+
+      h1 {
+        margin: 20px auto 14px;
+        font-size: clamp(40px, 8vw, 76px);
+        letter-spacing: -1.8px;
+        line-height: 1.05;
+        max-width: 900px;
+      }
+
+      .hero p {
+        margin: 0 auto;
+        max-width: 780px;
+        font-size: clamp(18px, 2.4vw, 24px);
+        line-height: 1.55;
+        color: var(--muted);
+      }
+
+      .hero-actions {
+        margin-top: 34px;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+      }
+
+      .btn-ghost {
+        background: var(--btn-ghost-bg);
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .btn-ghost:hover {
+        border-color: rgba(0, 113, 227, 0.34);
+        background: var(--btn-ghost-hover);
+      }
+
+      .panel {
+        margin: 34px auto 0;
+        width: min(980px, 100%);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(251, 252, 255, 0.72));
+        box-shadow: 0 16px 40px rgba(17, 24, 39, 0.08);
+        padding: 24px;
+        text-align: left;
+      }
+
+      :root[data-theme="dark"] .panel {
+        background: linear-gradient(145deg, rgba(28, 28, 36, 0.95), rgba(22, 22, 29, 0.85));
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--card);
+        padding: 16px;
+      }
+
+      .metric strong {
+        font-size: 24px;
+        letter-spacing: -0.4px;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .section {
+        padding: 76px 0;
+      }
+
+      .section h2 {
+        margin: 0;
+        font-size: clamp(30px, 5vw, 52px);
+        letter-spacing: -1px;
+        line-height: 1.15;
+      }
+
+      .section .desc {
+        margin-top: 16px;
+        max-width: 780px;
+        color: var(--muted);
+        line-height: 1.8;
+        font-size: 18px;
+      }
+
+      .grid {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--card);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 32px rgba(15, 23, 42, 0.05);
+        padding: 24px;
+      }
+
+      .card h3 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.3px;
+      }
+
+      .card p {
+        margin: 12px 0 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .flow {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .step {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--card);
+        padding: 14px;
+      }
+
+      .step b {
+        display: inline-flex;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        color: var(--accent);
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+
+      .step div {
+        margin-top: 10px;
+        font-size: 14px;
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      .langs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .lang {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 8px 14px;
+        background: var(--card);
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      .cta {
+        margin: 80px 0 90px;
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        background: linear-gradient(150deg, #0f172a, #1f2937 45%, #1a4f9f 140%);
+        color: #fff;
+        padding: 48px;
+        text-align: center;
+      }
+
+      .cta h3 {
+        margin: 0;
+        font-size: clamp(30px, 5vw, 48px);
+        line-height: 1.2;
+      }
+
+      .cta p {
+        margin: 14px auto 0;
+        max-width: 760px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.84);
+      }
+
+      .footer {
+        padding: 0 0 44px;
+        color: #8e8e93;
+        text-align: center;
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .metrics,
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .flow {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .nav {
+          display: none;
+        }
+
+        .metrics,
+        .grid,
+        .flow {
+          grid-template-columns: 1fr;
+        }
+
+        .panel,
+        .card,
+        .cta {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="brand" href="#">
+          <img src="logo.png" alt="Local Layer" />
+          <span>Local Layer</span>
+        </a>
+        <div class="nav-wrap">
+          <nav class="nav">
+            <a href="#features" data-i18n="nav.features"></a>
+            <a href="#workflow" data-i18n="nav.workflow"></a>
+            <a href="#global" data-i18n="nav.languages"></a>
+            <a href="https://github.com/houguang/local-layer" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+          <button class="theme-toggle" id="themeToggle" type="button">
+            <span id="themeIcon">☀️</span>
+            <span data-i18n="theme.toggle"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero container">
+        <div class="hero-kicker" data-i18n="hero.kicker"></div>
+        <h1 data-i18n="hero.title"></h1>
+        <p data-i18n="hero.desc"></p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/local-layer/ehhgbbhlookhlindmdkafmekmgkoilfl" target="_blank" rel="noreferrer" data-i18n="hero.install"></a>
+          <a class="btn btn-ghost" target="_blank" rel="noreferrer" href="https://www.youtube.com/watch?v=KLZ1JlEYX8I" data-i18n="hero.demo"></a>
+        </div>
+        <div class="panel">
+          <div class="metrics">
+            <div class="metric">
+              <strong>1x</strong>
+              <span data-i18n="metrics.reuse"></span>
+            </div>
+            <div class="metric">
+              <strong>15+</strong>
+              <span data-i18n="metrics.language"></span>
+            </div>
+            <div class="metric">
+              <strong>AI</strong>
+              <span data-i18n="metrics.ai"></span>
+            </div>
+            <div class="metric">
+              <strong>JSON</strong>
+              <span data-i18n="metrics.io"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section container" id="features">
+        <h2 data-i18n="features.title"></h2>
+        <p class="desc" data-i18n="features.desc"></p>
+        <div class="grid">
+          <article class="card">
+            <h3 data-i18n="features.item1.title"></h3>
+            <p data-i18n="features.item1.desc"></p>
+          </article>
+          <article class="card">
+            <h3 data-i18n="features.item2.title"></h3>
+            <p data-i18n="features.item2.desc"></p>
+          </article>
+          <article class="card">
+            <h3 data-i18n="features.item3.title"></h3>
+            <p data-i18n="features.item3.desc"></p>
+          </article>
+          <article class="card">
+            <h3 data-i18n="features.item4.title"></h3>
+            <p data-i18n="features.item4.desc"></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section container" id="workflow">
+        <h2 data-i18n="workflow.title"></h2>
+        <p class="desc" data-i18n="workflow.desc"></p>
+        <div class="flow">
+          <div class="step"><b>1</b><div data-i18n="workflow.step1"></div></div>
+          <div class="step"><b>2</b><div data-i18n="workflow.step2"></div></div>
+          <div class="step"><b>3</b><div data-i18n="workflow.step3"></div></div>
+          <div class="step"><b>4</b><div data-i18n="workflow.step4"></div></div>
+          <div class="step"><b>5</b><div data-i18n="workflow.step5"></div></div>
+        </div>
+      </section>
+
+      <section class="section container" id="global">
+        <h2 data-i18n="global.title"></h2>
+        <p class="desc" data-i18n="global.desc"></p>
+        <div class="langs">
+          <span class="lang">简体中文</span>
+          <span class="lang">繁體中文</span>
+          <span class="lang">日本語</span>
+          <span class="lang">Русский</span>
+          <span class="lang">Français</span>
+          <span class="lang">Español</span>
+          <span class="lang">Українська</span>
+          <span class="lang">한국어</span>
+          <span class="lang">Italiano</span>
+          <span class="lang">Português</span>
+          <span class="lang">Polski</span>
+          <span class="lang">Čeština</span>
+          <span class="lang">বাংলা</span>
+          <span class="lang">فارسی</span>
+        </div>
+      </section>
+
+      <div class="container">
+        <section class="cta">
+          <h3 data-i18n="cta.title"></h3>
+          <p data-i18n="cta.desc"></p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/local-layer/ehhgbbhlookhlindmdkafmekmgkoilfl" target="_blank" rel="noreferrer" data-i18n="cta.install"></a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer" data-i18n="footer.text"></footer>
+
+    <script>
+      const translations = {
+        zh: {
+          title: "Local Layer | 一次翻译，永久使用",
+          "theme.toggle": "切换主题",
+          "nav.features": "核心功能",
+          "nav.workflow": "使用方式",
+          "nav.languages": "全球语言",
+          "hero.kicker": "浏览器扩展 · 智能本地化",
+          "hero.title": "一次翻译，永久使用",
+          "hero.desc": "Local Layer 让你在网页中直接点击文本进行翻译与保存。相同内容再次出现时自动复用结果，逐步沉淀个人与团队翻译资产，显著提升外语网站阅读效率。",
+          "hero.install": "安装 Chrome 扩展",
+          "hero.demo": "查看演示",
+          "metrics.reuse": "翻译后自动复用",
+          "metrics.language": "已支持界面语言",
+          "metrics.ai": "一键批量翻译字段",
+          "metrics.io": "导入导出翻译库",
+          "features.title": "围绕真实网页场景设计的翻译工作流",
+          "features.desc": "从点击采集、悬浮编辑、批量翻译到自动替换，Local Layer 把“临时翻译”升级为“长期知识复用”。你翻得越多，后续页面自动命中的内容就越多。",
+          "features.item1.title": "点击即标记",
+          "features.item1.desc": "进入标记模式后，直接点击网页元素即可收集原文。支持普通文本、输入框 placeholder、下拉选项等常见场景。",
+          "features.item2.title": "弹窗内就地编辑",
+          "features.item2.desc": "在页面内浮层中集中编辑目标文本，支持聚焦定位、删除条目、批量保存，不打断阅读流程。",
+          "features.item3.title": "AI 一键翻译",
+          "features.item3.desc": "可配置 OpenAI / DeepSeek / Gemini / Claude，自动补全未翻译字段并提供错误定位与可恢复提示。",
+          "features.item4.title": "精确与内容匹配双模式",
+          "features.item4.desc": "既支持按路径精确替换，也支持按内容匹配替换；并可在动态页面与自定义组件中持续生效。",
+          "workflow.title": "5 步完成“采集 → 翻译 → 复用”",
+          "workflow.desc": "你不需要维护复杂词库。Local Layer 自动把每一次翻译沉淀为可复用数据，后续页面直接替换展示。",
+          "workflow.step1": "打开扩展并进入标记翻译模式",
+          "workflow.step2": "点击网页文本，自动加入翻译列表",
+          "workflow.step3": "手动填写或使用 AI 批量翻译",
+          "workflow.step4": "保存到站点翻译组，支持导入导出",
+          "workflow.step5": "同类页面自动复用，持续积累翻译库",
+          "global.title": "面向全球用户的多语言界面",
+          "global.desc": "项目已内置多语言界面包，覆盖亚洲、欧洲与中东常用语言，可直接用于国际发布与演示。",
+          "cta.title": "把重复翻译，变成一次性投入",
+          "cta.desc": "Local Layer 适用于技术文档、开发社区、教程平台、后台系统与跨团队术语统一场景。从今天开始，让每一次翻译都为下一次阅读提速。",
+          "cta.install": "安装 Chrome 扩展",
+          "footer.text": "© Local Layer · 面向真实网页工作流的界面本地化"
+        },
+        en: {
+          title: "Local Layer | Translate once, reuse forever",
+          "theme.toggle": "Toggle theme",
+          "nav.features": "Features",
+          "nav.workflow": "Workflow",
+          "nav.languages": "Languages",
+          "hero.kicker": "Browser Extension · Smart Localization",
+          "hero.title": "Translate once, reuse forever",
+          "hero.desc": "Local Layer lets you click text directly on webpages to translate and save it. When the same content appears again, it is reused automatically, helping individuals and teams accumulate translation assets over time.",
+          "hero.install": "Install Chrome Extension",
+          "hero.demo": "Watch Demo",
+          "metrics.reuse": "Auto reuse after one translation",
+          "metrics.language": "Supported UI languages",
+          "metrics.ai": "One-click AI batch translation",
+          "metrics.io": "Import and export translation library",
+          "features.title": "A translation workflow built for real webpages",
+          "features.desc": "From click capture and inline editing to batch translation and auto replacement, Local Layer turns temporary translation into long-term knowledge reuse.",
+          "features.item1.title": "Click to mark",
+          "features.item1.desc": "Enter marking mode and click webpage elements to collect source text. Supports plain text, input placeholders, and select options.",
+          "features.item2.title": "Edit in-page modal",
+          "features.item2.desc": "Edit target text in an in-page panel with focus navigation, item deletion, and batch saving without interrupting reading.",
+          "features.item3.title": "One-click AI translation",
+          "features.item3.desc": "Configure OpenAI / DeepSeek / Gemini / Claude to fill untranslated fields automatically with clear error handling.",
+          "features.item4.title": "Exact + content-match modes",
+          "features.item4.desc": "Supports both exact path-based replacement and content-match replacement, including dynamic pages and custom components.",
+          "workflow.title": "Complete capture → translate → reuse in 5 steps",
+          "workflow.desc": "No complex glossary maintenance required. Local Layer automatically turns every translation into reusable data for future pages.",
+          "workflow.step1": "Open the extension and enable marking mode",
+          "workflow.step2": "Click webpage text to add it into translation list",
+          "workflow.step3": "Fill manually or use AI batch translation",
+          "workflow.step4": "Save to site translation group with import/export",
+          "workflow.step5": "Auto reuse on similar pages and keep growing",
+          "global.title": "Multilingual UI for global users",
+          "global.desc": "Built-in language packs cover major languages across Asia, Europe, and the Middle East for immediate international use.",
+          "cta.title": "Turn repetitive translation into a one-time investment",
+          "cta.desc": "Ideal for technical docs, developer communities, tutorial platforms, dashboards, and cross-team terminology alignment.",
+          "cta.install": "Install Chrome Extension",
+          "footer.text": "© Local Layer · Interface localization for real web workflows"
+        }
+      };
+
+      const getLanguage = () => {
+        const lang = (navigator.language || "").toLowerCase();
+        return lang.startsWith("zh") ? "zh" : "en";
+      };
+
+      const applyLanguage = (lang) => {
+        const dict = translations[lang] || translations.en;
+        document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+        document.title = dict.title;
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          if (key && dict[key]) {
+            el.textContent = dict[key];
+          }
+        });
+      };
+
+      const THEME_KEY = "local-layer-website-theme";
+      const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+      const getTheme = () => {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved === "light" || saved === "dark") {
+          return { theme: saved, source: "user" };
+        }
+        return { theme: media.matches ? "dark" : "light", source: "system" };
+      };
+
+      const applyTheme = (theme) => {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme;
+        const icon = document.getElementById("themeIcon");
+        if (icon) {
+          icon.textContent = theme === "dark" ? "🌙" : "☀️";
+        }
+      };
+
+      const init = () => {
+        applyLanguage(getLanguage());
+        const initial = getTheme();
+        applyTheme(initial.theme);
+
+        const toggle = document.getElementById("themeToggle");
+        if (toggle) {
+          toggle.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+            const next = current === "dark" ? "light" : "dark";
+            localStorage.setItem(THEME_KEY, next);
+            applyTheme(next);
+          });
+        }
+
+        media.addEventListener("change", () => {
+          const saved = localStorage.getItem(THEME_KEY);
+          if (saved === "light" || saved === "dark") {
+            return;
+          }
+          applyTheme(media.matches ? "dark" : "light");
+        });
+      };
+
+      init();
+    </script>
+  </body>
+</html>
