@@ -10,22 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install ossutil
         run: |
-          curl -o ossutil https://gosspublic.alicdn.com/ossutil/1.7.16/ossutil64
+          wget https://gosspublic.alicdn.com/ossutil/1.7.16/ossutil64 -O ossutil
           chmod +x ossutil
 
       - name: Upload files to OSS
         env:
-          OSS_ACCESS_KEY_ID: ${{ secrets.OSS_ACCESS_KEY_ID }}
+          OSS_ACCESS_KEY_ID: ${{ vars.OSS_ACCESS_KEY_ID }}
           OSS_ACCESS_KEY_SECRET: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
-          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
-          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+          OSS_ENDPOINT: ${{ vars.OSS_ENDPOINT }}
+          OSS_BUCKET: ${{ vars.OSS_BUCKET }}
         run: |
           ./ossutil config -e $OSS_ENDPOINT -i $OSS_ACCESS_KEY_ID -k $OSS_ACCESS_KEY_SECRET
           ./ossutil sync ./ oss://$OSS_BUCKET -f --delete \
-            --exclude ".git/*" \
-            --exclude ".github/*"
+            --exclude ".git" \
+            --exclude ".github"
