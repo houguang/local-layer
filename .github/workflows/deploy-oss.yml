@@ -25,19 +25,14 @@ jobs:
           rm -rf .git .github ossutil_output
           rm -f readme.md readme_en.md wrangler.jsonc .gitignore
 
-      - name: Configure OSS
+      - name: Sync to OSS
         env:
           OSS_ACCESS_KEY_ID: ${{ secrets.OSS_ACCESS_KEY_ID }}
           OSS_ACCESS_KEY_SECRET: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
-        run: |
-          ./ossutil config --endpoint $OSS_ENDPOINT --access-key-id $OSS_ACCESS_KEY_ID --access-key-secret $OSS_ACCESS_KEY_SECRET
-
-      - name: Sync to OSS
-        env:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
-          ./ossutil sync ./ oss://$OSS_BUCKET -f --update --delete \
+          ./ossutil sync ./ oss://$OSS_BUCKET -f --update --delete --endpoint $OSS_ENDPOINT --access-key-id $OSS_ACCESS_KEY_ID --access-key-secret $OSS_ACCESS_KEY_SECRET \
             --exclude "*.md" \
             --exclude "*.json" \
             --exclude "ossutil" \
