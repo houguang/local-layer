@@ -1,4 +1,4 @@
-name: Deploy OSS
+name: Deploy OSS Incremental
 
 on:
   push:
@@ -10,21 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. 检出代码
       - uses: actions/checkout@v4
 
+      # 2. 安装 ossutil
       - name: Install ossutil
         run: |
           wget https://gosspublic.alicdn.com/ossutil/1.7.16/ossutil64 -O ossutil
           chmod +x ossutil
 
-      - name: Upload files to OSS
+      # 3. 配置 OSS
+      - name: Configure OSS
         env:
           OSS_ACCESS_KEY_ID: ${{ secrets.OSS_ACCESS_KEY_ID }}
           OSS_ACCESS_KEY_SECRET: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
-          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
           ./ossutil config -e $OSS_ENDPOINT -i $OSS_ACCESS_KEY_ID -k $OSS_ACCESS_KEY_SECRET
-          ./ossutil sync ./ oss://$OSS_BUCKET -f --delete \
-            --exclude ".git" \
-            --exclude ".github"
+
+      # 4. 增量上传文件
+      - name: Sync to OSS (Incremental)
+        env:
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+        run: |
+          # 使用 --update 参数，只上传本地更新或新增的文件，节省时间
+          ./ossutil sync ./ oss://$OSS_BUCKET -f --update \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "readme.md" \
+            --exclude "readme_en.md" \
+            --exclude "wrangler.jsonc" \
+            --exclude ".gitignore"
