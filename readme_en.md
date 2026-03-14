@@ -18,9 +18,7 @@ As you keep using it, Local Layer gradually builds your personal translation lib
 
 # 🎬 Demo
 
-Here is a demo of how Local Layer works:
-
-<video src="demo.mp4" controls width="100%"></video>
+Here is a demo of how Local Layer works:[demo](https://www.youtube.com/watch?v=KLZ1JlEYX8I)
 
 ---
 
