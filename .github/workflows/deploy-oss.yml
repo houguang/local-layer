@@ -20,11 +20,6 @@ jobs:
           mv ossutil-2.2.1-linux-amd64/ossutil ./ossutil
           chmod +x ./ossutil
 
-      - name: Remove excluded directories and files
-        run: |
-          rm -rf .git .github
-          rm -f readme.md readme_en.md wrangler.jsonc .gitignore
-
       - name: Sync to OSS
         env:
           OSS_ACCESS_KEY_ID: ${{ secrets.OSS_ACCESS_KEY_ID }}
@@ -32,9 +27,11 @@ jobs:
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
-          REGION="${OSS_REGION:-$(echo "$OSS_ENDPOINT" | sed -E 's#https?://##; s#/.*##; s#^oss-([^.]+)\..*$#\1#; s#^[^.]+\.oss-([^.]+)\..*$#\1#')}"
+          REGION="$(echo "$OSS_ENDPOINT" | sed -E 's#https?://##; s#/.*##; s#^oss-([^.]+)\..*$#\1#; s#^[^.]+\.oss-([^.]+)\..*$#\1#; s#-internal$##')"
           ./ossutil sync ./ oss://$OSS_BUCKET -f --update --delete --sign-version v4 --region "$REGION" --endpoint $OSS_ENDPOINT --access-key-id $OSS_ACCESS_KEY_ID --access-key-secret $OSS_ACCESS_KEY_SECRET \
             --exclude "*.md" \
-            --exclude "*.json" \
+            --exclude "*.json*" \
+            --exclude ".*" \
             --exclude "ossutil-2.2.1-linux-amd64.zip" \
+            --exclude "ossutil" \
             --exclude "ossutil-2.2.1-linux-amd64/*"
