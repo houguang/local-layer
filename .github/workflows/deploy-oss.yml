@@ -35,8 +35,8 @@ jobs:
         run: |
           # 使用 --update 参数，只上传本地更新或新增的文件，节省时间
           ./ossutil sync ./ oss://$OSS_BUCKET -f --update \
-            --exclude ".git/*" \
-            --exclude ".github/*" \
+            --exclude-dir ".git" \
+            --exclude-dir ".github" \
             --exclude "readme.md" \
             --exclude "readme_en.md" \
             --exclude "wrangler.jsonc" \
