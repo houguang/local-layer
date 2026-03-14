@@ -20,10 +20,10 @@ jobs:
 
       - name: Upload files to OSS
         env:
-          OSS_ACCESS_KEY_ID: ${{ vars.OSS_ACCESS_KEY_ID }}
+          OSS_ACCESS_KEY_ID: ${{ secrets.OSS_ACCESS_KEY_ID }}
           OSS_ACCESS_KEY_SECRET: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
-          OSS_ENDPOINT: ${{ vars.OSS_ENDPOINT }}
-          OSS_BUCKET: ${{ vars.OSS_BUCKET }}
+          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
           ./ossutil config -e $OSS_ENDPOINT -i $OSS_ACCESS_KEY_ID -k $OSS_ACCESS_KEY_SECRET
           ./ossutil sync ./ oss://$OSS_BUCKET -f --delete \
