@@ -19,7 +19,7 @@ jobs:
 
       - name: Remove excluded directories and files
         run: |
-          rm -rf .git .github
+          rm -rf .git .github ossutil_output
           rm -f readme.md readme_en.md wrangler.jsonc .gitignore
 
       - name: Configure OSS
@@ -37,3 +37,4 @@ jobs:
           ./ossutil sync ./ oss://$OSS_BUCKET -f --update --delete \
             --exclude "*.md" \
             --exclude "*.json"
+            --exclude "ossutil" 
