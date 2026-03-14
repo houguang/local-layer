@@ -34,7 +34,7 @@ jobs:
         env:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
-          ./ossutil sync ./ oss://$OSS_BUCKET -f --update --delete \
+          ./ossutil sync ./ oss://$OSS_BUCKET -f --update --delete -L /tmp/ossutil.log \
             --exclude "*.md" \
             --exclude "*.json" \
             --exclude "ossutil" 
