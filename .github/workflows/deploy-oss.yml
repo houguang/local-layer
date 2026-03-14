@@ -36,5 +36,5 @@ jobs:
         run: |
           ./ossutil sync ./ oss://$OSS_BUCKET -f --update --delete \
             --exclude "*.md" \
-            --exclude "*.json"
+            --exclude "*.json" \
             --exclude "ossutil" 
