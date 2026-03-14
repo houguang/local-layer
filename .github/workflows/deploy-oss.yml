@@ -14,7 +14,8 @@ jobs:
 
       - name: Install ossutil
         run: |
-          curl -o ossutil-2.2.1-linux-amd64.zip https://gosspublic.alicdn.com/ossutil/v2/2.2.1/ossutil-2.2.1-linux-amd64.zip
+          curl -fL --retry 3 --retry-delay 2 -o ossutil-2.2.1-linux-amd64.zip https://gosspublic.alicdn.com/ossutil/v2/2.2.1/ossutil-2.2.1-linux-amd64.zip
+          unzip -tq ossutil-2.2.1-linux-amd64.zip
           unzip -q ossutil-2.2.1-linux-amd64.zip
           mv ossutil-2.2.1-linux-amd64/ossutil ./ossutil
           chmod +x ./ossutil
